@@ -861,6 +861,47 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeRangeFilter,
   };
 
+  // Theme toggle functionality
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle.querySelector(".theme-icon");
+  const themeLabel = themeToggle.querySelector(".theme-label");
+
+  // Check for saved theme preference or default to light
+  function initializeTheme() {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      themeIcon.textContent = "☀️";
+      themeLabel.textContent = "Light";
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+      themeIcon.textContent = "🌙";
+      themeLabel.textContent = "Dark";
+    }
+  }
+
+  // Toggle theme function
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    if (currentTheme === "dark") {
+      document.documentElement.setAttribute("data-theme", "light");
+      localStorage.setItem("theme", "light");
+      themeIcon.textContent = "🌙";
+      themeLabel.textContent = "Dark";
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+      themeIcon.textContent = "☀️";
+      themeLabel.textContent = "Light";
+    }
+  }
+
+  // Event listener for theme toggle
+  themeToggle.addEventListener("click", toggleTheme);
+
+  // Initialize theme
+  initializeTheme();
+
   // Initialize app
   checkAuthentication();
   initializeFilters();
