@@ -472,6 +472,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Helper function to escape HTML attribute values to prevent XSS
+  function escapeHtmlAttr(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
   // Function to share an activity
   function shareActivity(activityName, description, schedule) {
     const shareText = `Check out ${activityName} at Mergington High School! ${description} Schedule: ${schedule}`;
@@ -542,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     shareModal.querySelector("#share-activity-name").textContent = activityName;
     shareModal.querySelector("#share-facebook").href = 
-      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
     shareModal.querySelector("#share-twitter").href = 
       `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
     
@@ -561,17 +571,25 @@ document.addEventListener("DOMContentLoaded", () => {
           copiedMessage.classList.add("hidden");
         }, 2000);
       }).catch(() => {
-        // Fallback for older browsers
-        const textArea = document.createElement("textarea");
-        textArea.value = shareUrl;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        copiedMessage.classList.remove("hidden");
-        setTimeout(() => {
-          copiedMessage.classList.add("hidden");
-        }, 2000);
+        // Fallback for older browsers using deprecated execCommand
+        try {
+          const textArea = document.createElement("textarea");
+          textArea.value = shareUrl;
+          textArea.style.position = "fixed";
+          textArea.style.left = "-9999px";
+          document.body.appendChild(textArea);
+          textArea.select();
+          const successful = document.execCommand("copy");
+          document.body.removeChild(textArea);
+          if (successful) {
+            copiedMessage.classList.remove("hidden");
+            setTimeout(() => {
+              copiedMessage.classList.add("hidden");
+            }, 2000);
+          }
+        } catch (err) {
+          console.log("Copy failed:", err);
+        }
       });
     });
 
@@ -640,9 +658,9 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    // Create share button
+    // Create share button with escaped attributes to prevent XSS
     const shareButtonHtml = `
-      <button class="share-button tooltip" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}">
+      <button class="share-button tooltip" data-activity="${escapeHtmlAttr(name)}" data-description="${escapeHtmlAttr(details.description)}" data-schedule="${escapeHtmlAttr(formattedSchedule)}">
         <span class="share-icon">📤</span> Share
         <span class="tooltip-text">Share this activity with friends</span>
       </button>
