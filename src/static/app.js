@@ -447,7 +447,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (details.difficulty) {
           return;
         }
-      } else if (currentDifficulty) {
+      } else {
         // Specific difficulty selected - show only activities with that difficulty
         if (details.difficulty !== currentDifficulty) {
           return;
