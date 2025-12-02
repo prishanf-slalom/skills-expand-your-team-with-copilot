@@ -440,8 +440,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Apply difficulty filter
-      if (currentDifficulty) {
-        // If a specific difficulty is selected, show only activities with that difficulty
+      // When "All Levels" is selected (currentDifficulty is ""), show activities without a difficulty field
+      // When a specific difficulty is selected, show only activities with that difficulty
+      if (currentDifficulty === "") {
+        // "All Levels" shows activities without a specified difficulty (they are for all levels)
+        if (details.difficulty) {
+          return;
+        }
+      } else if (currentDifficulty) {
+        // Specific difficulty selected - show only activities with that difficulty
         if (details.difficulty !== currentDifficulty) {
           return;
         }
